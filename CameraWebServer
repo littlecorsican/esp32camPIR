@@ -1,0 +1,42 @@
+// This function gets a call when a WebSocket event occurs
+void onWebSocketEvent(byte num, WStype_t type, uint8_t * payload, size_t length) {
+  switch (type) {
+    case WStype_DISCONNECTED: // enum that read status this is used for debugging.
+      Serial.print("WS Type ");
+      Serial.print(type);
+      Serial.println(": DISCONNECTED");
+      break;
+    case WStype_CONNECTED:  // Check if a WebSocket client is connected or not
+      Serial.print("WS Type ");
+      Serial.print(type);
+      Serial.println(": CONNECTED");
+      break;
+    case WStype_TEXT: // check responce from client
+      Serial.println("receives payload ");
+      //Serial.print(payload);
+      break;
+  }
+}
+
+void update_webpage() {
+  //StaticJsonDocument
+  String PIR = "1";
+  //Serial.printIn("updatng");
+  //Serial.printIn("updating....");
+  webSocket.broadcastTXT(PIR);
+}
+
+String SendHTML(){
+  
+String ptr = "<!DOCTYPE html><html><head><title>Digiweiller</title></head><body><h1>Digiweiller</h1><br><br><br><h3>PIR</h3><br><br><br><audio controls id='audio'>";
+ptr += "<source src='alarm.mp3' type='audio/mpeg'></audio><br><br><div id='log' style='width:100%;height:1000px;border:1px solid black'></div><br>";
+ptr += "<script>var Socket;function init(){ ";
+ptr += "Socket=new WebSocket('ws://' + window.location.hostname + ':81/' ); console.log('init'); Socket.onmessage=function(event){ processCommand(event); }; };function processCommand(event){";
+ptr += "var obj = event.data;  var now = new Date(); document.getElementById('log').innerHTML += document.getElementById('log').innerHTML + now + '<br>'; console.log(obj + ' ' + now + ' ping!');";
+ptr += "};function playSound() {  document.getElementById('audio').play();}";
+ptr += "window.onload = function(event) {  init();}";
+ptr += "</script></body><html>";
+
+return ptr;
+
+}
